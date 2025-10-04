@@ -1,0 +1,24 @@
+var apiclient = (function () {
+
+    var apiUrl = "http://localhost:8080/blueprints";
+
+    return {
+
+        getBlueprintsByAuthor: function(author, callback) {
+            $.get(apiUrl + "/" + author, function(data) {
+                callback(data);
+            }).fail(function() {
+                alert("Error obteniendo planos del autor: " + author);
+            });
+        },
+
+        getBlueprintsByNameAndAuthor: function(author, name, callback) {
+            $.get(apiUrl + "/" + author + "/" + name, function(data) {
+                callback(data);
+            }).fail(function() {
+                alert("Error obteniendo plano " + name + " de " + author);
+            });
+        }
+    };
+
+})();
