@@ -27,14 +27,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class BlueprintsServices {
 
-    @Autowired
-    BlueprintsPersistence bpp = null;
+    final BlueprintsPersistence bpp;
+
+    final BlueprintFilter blueprintFilter;
 
     @Autowired
-    BlueprintFilter blueprintFilter = null;
-
-    public BlueprintsServices(BlueprintsPersistence bpp) {
+    public BlueprintsServices(BlueprintsPersistence bpp, BlueprintFilter blueprintFilter) {
         this.bpp = bpp;
+        this.blueprintFilter = blueprintFilter;
     }
     
     public void addNewBlueprint(Blueprint bp){
@@ -86,14 +86,21 @@ public class BlueprintsServices {
     }
 
     public void updateBlueprint(String author, String bpname, Blueprint updatedBlueprint) throws BlueprintNotFoundException {
-        getBlueprint(author, bpname);
         try {
-            Blueprint newBlueprint = new Blueprint(author, bpname,
-                    updatedBlueprint.getPoints().toArray(new Point[0]));
-            bpp.saveBlueprint(newBlueprint);
+            Blueprint existing = bpp.getBlueprint(author, bpname);
+            if (existing == null) {
+                throw new BlueprintPersistenceException("Blueprint not found: " + bpname);
+            }
+            for(Point p : updatedBlueprint.getPoints()){
+                existing.addPoint(p);
+            }
+
         } catch (BlueprintPersistenceException e) {
             throw new RuntimeException("Error updating blueprint", e);
         }
     }
 
+    public  void deleteBlueprint(String author, String bpname) throws BlueprintNotFoundException {
+        bpp.deleteBlueprint(author,bpname);
+    }
 }

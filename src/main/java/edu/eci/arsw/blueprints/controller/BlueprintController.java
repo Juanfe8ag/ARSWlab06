@@ -53,6 +53,16 @@ public class BlueprintController {
         }
     }
 
+    @RequestMapping(value = "/{author}", method = RequestMethod.GET)
+    public ResponseEntity<?> getBlueprintsByAuthor(@PathVariable String author) {
+        try {
+            Set<Blueprint> authorBlueprints = blueprintServices.getBlueprintsByAuthor(author);
+            return new ResponseEntity<>(authorBlueprints, HttpStatus.ACCEPTED);
+        } catch (BlueprintNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @RequestMapping(value = "/{author}/{bpname}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateBlueprint(@PathVariable String author,
                                              @PathVariable String bpname,
@@ -60,6 +70,21 @@ public class BlueprintController {
         try {
             blueprintServices.updateBlueprint(author, bpname, blueprint);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } catch (BlueprintNotFoundException ex) {
+            Logger.getLogger(BlueprintController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("Blueprint not found: " + author + "/" + bpname, HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            Logger.getLogger(BlueprintController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("Error updating blueprint", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/{author}/{bpname}")
+    public ResponseEntity<?> deleteBlueprint(@PathVariable String author,
+                                             @PathVariable String bpname) {
+        try {
+            blueprintServices.deleteBlueprint(author, bpname);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (BlueprintNotFoundException ex) {
             Logger.getLogger(BlueprintController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>("Blueprint not found: " + author + "/" + bpname, HttpStatus.NOT_FOUND);

@@ -18,6 +18,31 @@ var apiclient = (function () {
             }).fail(function() {
                 alert("Error obteniendo plano " + name + " de " + author);
             });
+        },
+
+        updateBlueprint: function (author, name, blueprint, callback) {
+            return $.ajax({
+                url: apiUrl + "/" + author + "/" + name,
+                type: "PUT",
+                data: JSON.stringify(blueprint),
+                contentType: "application/json"
+            }).then(callback);
+        },
+
+        createBlueprint: function (blueprint, callback) {
+            return $.ajax({
+                url: apiUrl,
+                type: "POST",
+                data: JSON.stringify(blueprint),
+                contentType: "application/json"
+            }).then(callback);
+        },
+
+        deleteBlueprint: function (author, name, callback) {
+            return $.ajax({
+                url: apiUrl + "/" + author + "/" + name,
+                type: "DELETE"
+            }).then(callback);
         }
     };
 

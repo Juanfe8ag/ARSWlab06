@@ -10,6 +10,7 @@ import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.Set;
  * @author hcadavid
  */
 
-@Service
+@Repository
 public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
 
     private final Map<Tuple<String,String>,Blueprint> blueprints=new HashMap<>();
@@ -67,6 +68,14 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
     @Override
     public Set<Blueprint> getAllBlueprints() {
         return new HashSet<>(blueprints.values());
+    }
+
+    public void deleteBlueprint(String author, String bpname) throws BlueprintNotFoundException {
+            for (Blueprint bp : blueprints.values()) {
+                if (bp.getAuthor().equals(author) && bp.getName().equals(bpname)) {
+                    blueprints.remove(new Tuple<>(author, bp.getName()));
+                }
+            }
     }
     
 }
